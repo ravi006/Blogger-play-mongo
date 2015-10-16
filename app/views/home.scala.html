@@ -1,11 +1,39 @@
 @(message: String)
 
-@main("Play with Anorm") {
+@mainTwo("Play with Mongo","Model-Q Blogger") {
 
     <!-- Begin page content -->
     <div class="container">
       <div class="page-header">
-        <h1>Sticky footer with fixed navbar</h1>
+        <h1>Blog About Play Framework and ReactiveMongo</h1>
       </div>
+        <div class="page-body">
+            <div class="row">
+                <div class="col-sm-6 col-md-4">
+                    <div class="thumbnail">
+                        <img src="@routes.Assets.at("images/Blogging.jpg")">
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+                    <div class="jumbotron">
+                        <h2>Hello, Blogger!</h2>
+                        <p>...</p>
+                        <p><a class="btn btn-primary btn-lg" href="#" role="button">Blog Here</a></p>
+                    </div>
+                </div>
+                <div class="col-sm-6 col-md-4">
+
+                    <form class="navbar-form navbar-left" role="search" onsubmit="@routes.UserController.userSave()">
+                        <div class="form-group">
+                            <input type="text" class="form-control" placeholder="email">
+                            <input type="password" class="form-control" placeholder="password">
+                            <input type="text" class="form-control" placeholder="FirstName">
+                            <input type="text" class="form-control" placeholder="LastName">
+                        </div>
+                        <button type="submit" class="btn btn-default">Sign Up</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 }

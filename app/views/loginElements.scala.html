@@ -1,0 +1,8 @@
+@(loginForm: Form[User])(implicit msg: play.api.i18n.Messages)
+
+@import helper._
+
+@implicitFieldConstructor = @{ FieldConstructor(twitterBootstrapInput.f) }
+
+@inputText(loginForm("email"), '_label -> "Email", 'class -> "form-control")
+@inputText(loginForm("password"), '_Password -> "Password", 'class -> "form-control")

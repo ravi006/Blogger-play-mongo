@@ -19,6 +19,8 @@ libraryDependencies ++= Seq(
   "org.webjars" % "respond" % "1.4.2"
 )
 
+libraryDependencies += "org.mindrot" % "jbcrypt" % "0.3m"
+
 routesGenerator := InjectedRoutesGenerator
 
 pipelineStages := Seq(rjs)

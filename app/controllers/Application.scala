@@ -4,6 +4,8 @@ import java.util.concurrent.TimeoutException
 
 import javax.inject.Inject
 
+import views.html.home
+
 import scala.concurrent.Future
 import scala.concurrent.duration.DurationInt
 
@@ -16,7 +18,7 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json, Json.toJsFieldJsValueWrapper
 
 import play.modules.reactivemongo.{
-  MongoController, ReactiveMongoApi, ReactiveMongoComponents
+MongoController, ReactiveMongoApi, ReactiveMongoComponents
 }
 import play.modules.reactivemongo.json._, collection.JSONCollection
 
@@ -43,9 +45,9 @@ import views.html
  * (BSONCollection.) See ReactiveMongo examples to learn how to use it.
  */
 class Application @Inject() (
-  val reactiveMongoApi: ReactiveMongoApi,
-  val messagesApi: MessagesApi)
-    extends Controller with MongoController with ReactiveMongoComponents {
+                              val reactiveMongoApi: ReactiveMongoApi,
+                              val messagesApi: MessagesApi)
+  extends Controller with MongoController with ReactiveMongoComponents {
 
   implicit val timeout = 10.seconds
 
@@ -80,12 +82,16 @@ class Application @Inject() (
   /**
    * Handle default path requests, redirect to employee list
    */
-  def index = Action { Home }
+  def index = Action { homePage }
 
   /**
    * This result directly redirect to the application home.
    */
   val Home = Redirect(routes.Application.list())
+
+  val textMessage = "Hello, This is Play Framework and ReactiveMongo"
+
+  def homePage = Ok(views.html.home("Play Framework"))
 
   /**
    * Display the paginated list of employees.
@@ -135,20 +141,20 @@ class Application @Inject() (
    */
   def update(id: String) = Action.async { implicit request =>
     employeeForm.bindFromRequest.fold(
-      { formWithErrors =>
-        implicit val msg = messagesApi.preferred(request)
-        Future.successful(BadRequest(html.editForm(id, formWithErrors)))
-      },
-      employee => {
-        val futureUpdateEmp = collection.update(Json.obj("_id" -> Json.obj("$oid" -> id)), employee.copy(_id = BSONObjectID(id)))
-        futureUpdateEmp.map { result =>
-          Home.flashing("success" -> s"Employee ${employee.name} has been updated")
-        }.recover {
-          case t: TimeoutException =>
-            Logger.error("Problem found in employee update process")
-            InternalServerError(t.getMessage)
-        }
-      })
+    { formWithErrors =>
+      implicit val msg = messagesApi.preferred(request)
+      Future.successful(BadRequest(html.editForm(id, formWithErrors)))
+    },
+    employee => {
+      val futureUpdateEmp = collection.update(Json.obj("_id" -> Json.obj("$oid" -> id)), employee.copy(_id = BSONObjectID(id)))
+      futureUpdateEmp.map { result =>
+        Home.flashing("success" -> s"Employee ${employee.name} has been updated")
+      }.recover {
+        case t: TimeoutException =>
+          Logger.error("Problem found in employee update process")
+          InternalServerError(t.getMessage)
+      }
+    })
   }
 
   /**
@@ -164,20 +170,20 @@ class Application @Inject() (
    */
   def save = Action.async { implicit request =>
     employeeForm.bindFromRequest.fold(
-      { formWithErrors =>
-        implicit val msg = messagesApi.preferred(request)
-        Future.successful(BadRequest(html.createForm(formWithErrors)))
-      },
-      employee => {
-        val futureUpdateEmp = collection.insert(employee.copy(_id = BSONObjectID.generate))
-        futureUpdateEmp.map { result =>
-          Home.flashing("success" -> s"Employee ${employee.name} has been created")
-        }.recover {
-          case t: TimeoutException =>
-            Logger.error("Problem found in employee update process")
-            InternalServerError(t.getMessage)
-        }
-      })
+    { formWithErrors =>
+      implicit val msg = messagesApi.preferred(request)
+      Future.successful(BadRequest(html.createForm(formWithErrors)))
+    },
+    employee => {
+      val futureUpdateEmp = collection.insert(employee.copy(_id = BSONObjectID.generate))
+      futureUpdateEmp.map { result =>
+        Home.flashing("success" -> s"Employee ${employee.name} has been created")
+      }.recover {
+        case t: TimeoutException =>
+          Logger.error("Problem found in employee update process")
+          InternalServerError(t.getMessage)
+      }
+    })
   }
 
   /**
