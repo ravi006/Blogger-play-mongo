@@ -11,9 +11,9 @@ import scala.concurrent.duration.DurationInt
 
 import play.api.Logger
 import play.api.i18n.MessagesApi
-import play.api.mvc.{ Action, Controller }
+import play.api.mvc.{Action, Controller}
 import play.api.data.Form
-import play.api.data.Forms.{ date, ignored, mapping, nonEmptyText }
+import play.api.data.Forms.{date, ignored, mapping, nonEmptyText}
 import play.api.libs.concurrent.Execution.Implicits.defaultContext
 import play.api.libs.json.Json, Json.toJsFieldJsValueWrapper
 
@@ -24,7 +24,7 @@ import play.modules.reactivemongo.json._, collection.JSONCollection
 
 import reactivemongo.bson.BSONObjectID
 
-import models.{ Employee, JsonFormats, Page }, JsonFormats.employeeFormat
+import models.{Employee, JsonFormats, Page}, JsonFormats.employeeFormat
 import views.html
 
 /*
@@ -44,9 +44,9 @@ import views.html
  * Of course, you can still use the default Collection implementation
  * (BSONCollection.) See ReactiveMongo examples to learn how to use it.
  */
-class Application @Inject() (
-                              val reactiveMongoApi: ReactiveMongoApi,
-                              val messagesApi: MessagesApi)
+class Application @Inject()(
+                             val reactiveMongoApi: ReactiveMongoApi,
+                             val messagesApi: MessagesApi)
   extends Controller with MongoController with ReactiveMongoComponents {
 
   implicit val timeout = 10.seconds
@@ -75,6 +75,7 @@ class Application @Inject() (
   // ------------------------------------------ //
   // Using case classes + Json Writes and Reads //
   // ------------------------------------------ //
+
   import play.api.data.Form
   import models._
   import models.JsonFormats._
@@ -82,7 +83,9 @@ class Application @Inject() (
   /**
    * Handle default path requests, redirect to employee list
    */
-  def index = Action { homePage }
+  def index = Action {
+    homePage
+  }
 
   /**
    * This result directly redirect to the application home.

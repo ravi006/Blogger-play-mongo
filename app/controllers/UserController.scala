@@ -27,14 +27,16 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
   def collection: JSONCollection = db.collection[JSONCollection]("user")
 
 
-  def login = Action { loginPage }
+  def login = Action {
+    loginPage
+  }
 
   val loginPage = Ok(views.html.loginForm("Hello"))
 
   /**
    * Used to create User
    */
-  val userForm = Form( mapping(
+  val userForm = Form(mapping(
     "id" -> ignored(BSONObjectID.generate: BSONObjectID),
     "email" -> nonEmptyText,
     "password" -> nonEmptyText,
@@ -51,7 +53,7 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
 
   /**
    * Methode for Creating User
-   * @return User
+   * @return
    */
   def createUser = Action { request =>
     implicit val msg = messagesApi.preferred(request)
@@ -59,22 +61,22 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
   }
 
   import scala.concurrent.ExecutionContext.Implicits.global
-  def userSave  = Action {implicit request =>
+
+  def userSave = Action { implicit request =>
     userForm.bindFromRequest.fold(
     { formWithErrors =>
       implicit val msg = messagesApi.preferred(request)
       Future.successful(BadRequest(html.createUserForm(formWithErrors)))
     },
     user => {
-      val futureUpdateUser = collection.insert(user.copy(_id = BSONObjectID.generate,user.email,passwordHash(user.password),user.firstName,user.lastName))
+      val futureUpdateUser = collection.insert(user.copy(_id = BSONObjectID.generate, user.email, passwordHash(user.password), user.firstName, user.lastName))
     }
     )
     Redirect(routes.Application.index)
   }
 
 
-
-  def userCreate  = Action { implicit request =>
+  def userCreate = Action { implicit request =>
     userForm.bindFromRequest.fold(
     { formWithErrors =>
       implicit val msg = messagesApi.preferred(request)
@@ -108,15 +110,15 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
     Ok("Hello Play")
   }
 
-  def passwordHash(password: String): String =  {
+  def passwordHash(password: String): String = {
     BCrypt.hashpw(password, BCrypt.gensalt(12))
   }
 
-  def checkPassword(password: String, hashPassword: String): Boolean =  {
+  def checkPassword(password: String, hashPassword: String): Boolean = {
     BCrypt.checkpw(password, hashPassword)
   }
 
-  def userPasswordUpdate(id: BSONObjectID) = Action {implicit request =>
+  def userPasswordUpdate(id: BSONObjectID) = Action { implicit request =>
     userForm.bindFromRequest.fold(
     { formWithErrors =>
       implicit val msg = messagesApi.preferred(request)

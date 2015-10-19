@@ -14,6 +14,7 @@ case class Page[A](items: Seq[A], page: Int, offset: Long, total: Long) {
 }
 
 object JsonFormats {
+
   import play.api.libs.json.Json
   import play.api.data._
   import play.api.data.Forms._

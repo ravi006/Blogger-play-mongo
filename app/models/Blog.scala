@@ -7,7 +7,8 @@ import java.util.Date
  */
 case class BlogMessages(userName: String, message: String, _date: Date)
 
-object BlogMessages{
+object BlogMessages {
+
   import play.api.libs.json.Json
   import play.modules.reactivemongo.json.BSONFormats._
 

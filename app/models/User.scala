@@ -4,12 +4,13 @@ import play.api.libs.json.Json
 import reactivemongo.bson.BSONObjectID
 
 /**
-  * Created by ravi on 16/10/15.
-  */
+ * Created by ravi on 16/10/15.
+ */
 case class User(_id: BSONObjectID, email: String, password: String, firstName: String, lastName: String)
 
 
-object User{
+object User {
+
   import play.modules.reactivemongo.json.BSONFormats._
 
   implicit val userFormat = Json.format[User]
