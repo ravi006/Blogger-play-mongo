@@ -1,4 +1,4 @@
-@(mesage: String)
+@(userForm: Form[UserLogin])(implicit msg: play.api.i18n.Messages)
 
 @import helper._
 
@@ -15,7 +15,7 @@
         <div id="login-overlay" class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h4 class="modal-title" id="myModalLabel">Login to <b>YaelsEverythingStore.com</b></h4> or go back to our <a href="./index.jsp">main site</a>.
+                    <h4 class="modal-title" id="myModalLabel">Login to <b>Model-Q Blogger</b></h4> or go back to our <a href="@routes.Application.index()">main site</a>.
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -46,12 +46,12 @@
                         <div class="col-xs-6">
                             <p class="lead">Register now for <span class="text-success">FREE</span></p>
                             <ul class="list-unstyled" style="line-height: 2">
-                                <li><span class="fa fa-check text-success"></span> See all your orders</li>
-                                <li><span class="fa fa-check text-success"></span> Shipping is always free</li>
-                                <li><span class="fa fa-check text-success"></span> Save your favorites</li>
+                                <li><span class="fa fa-check text-success"></span> See all your Bloggers</li>
+                                <li><span class="fa fa-check text-success"></span> Sign Up is always free</li>
+                                <li><span class="fa fa-check text-success"></span> Save your all Blogs</li>
                                 <li><span class="fa fa-check text-success"></span> Fast checkout</li>
-                                <li><span class="fa fa-check text-success"></span> Get a gift <small>(only new customers)</small></li>
-                                <li><span class="fa fa-check text-success"></span>Holiday discounts up to 30% off</li>
+                                <li><span class="fa fa-check text-success"></span> Get a gift <small>(profile visits more than 10000)</small></li>
+                                <li><span class="fa fa-check text-success"></span>Technical Discussion using free Blogs</li>
                             </ul>
                             <p><a href="./Register.jsp" class="btn btn-info btn-block">Yes please, register now!</a></p>
                         </div>

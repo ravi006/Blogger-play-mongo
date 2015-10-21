@@ -15,3 +15,13 @@ object User {
 
   implicit val userFormat = Json.format[User]
 }
+
+case class UserLogin(email: String, password: String)
+
+
+object UserLogin {
+
+  import play.modules.reactivemongo.json.BSONFormats._
+
+  implicit val userFormat = Json.format[UserLogin]
+}

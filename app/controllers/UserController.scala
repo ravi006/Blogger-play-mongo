@@ -1,19 +1,21 @@
 package controllers
 
+import java.util.concurrent.TimeoutException
 import javax.inject.Inject
 
 import akka.actor.Status.{Failure, Success}
 import com.fasterxml.jackson.annotation.JsonTypeInfo.Id
-import models.User
+import models.{UserLogin, User}
 import org.mindrot.jbcrypt.BCrypt
 import org.mindrot.jbcrypt.BCrypt
+import play.api.Logger
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.i18n.MessagesApi
 import play.api.libs.json.Json
-import play.modules.reactivemongo.json.collection.JSONCollection
-import play.modules.reactivemongo.{json, ReactiveMongoComponents, MongoController, ReactiveMongoApi}
 import play.api.mvc.{Action, Controller}
+import play.modules.reactivemongo.json.collection.JSONCollection
+import play.modules.reactivemongo.{ReactiveMongoComponents, MongoController, ReactiveMongoApi}
 import reactivemongo.bson.{BSONString, BSONDocument, BSONObjectID}
 import views.html
 
@@ -26,12 +28,6 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
 
   def collection: JSONCollection = db.collection[JSONCollection]("user")
 
-
-  def login = Action {
-    loginPage
-  }
-
-  val loginPage = Ok(views.html.loginForm("Hello"))
 
   /**
    * Used to create User
@@ -70,13 +66,23 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
     },
     user => {
       val futureUpdateUser = collection.insert(user.copy(_id = BSONObjectID.generate, user.email, passwordHash(user.password), user.firstName, user.lastName))
+
+    /*  futureUpdateUser.onComplete {
+        case Success() => {
+
+        }
+        case Failure() => {
+
+        }
+      }*/
+
     }
     )
-    Redirect(routes.Application.index)
+    Redirect(routes.UserController.blog())
   }
 
 
-  def userCreate = Action { implicit request =>
+/*  def userCreate = Action { implicit request =>
     userForm.bindFromRequest.fold(
     { formWithErrors =>
       implicit val msg = messagesApi.preferred(request)
@@ -92,23 +98,12 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
           "lastName" -> BSONString(user.lastName)
         )
       )
-      //val futureUpdateUser: Future[WriteResult] = collection.insert(modifier)
-
-      /*
-      futureUpdateUser.onComplete{
-        case Success() => {
-
-        }
-        case Failure() => {
-
-        }
-      }
-      */
+      val futureUpdateUser: Future[WriteResult] = collection.insert(modifier)
     }
     )
     //Redirect(routes.Application.index)
     Ok("Hello Play")
-  }
+  }*/
 
   def passwordHash(password: String): String = {
     BCrypt.hashpw(password, BCrypt.gensalt(12))
@@ -136,5 +131,41 @@ class UserController @Inject()(val reactiveMongoApi: ReactiveMongoApi, val messa
     )
     //Redirect(routes.Application.index)
     Ok("Hello Play")
+  }
+
+  def blog = Action {
+    blogPage
+  }
+
+  val blogPage = Ok(views.html.blogging("Hello"))
+
+
+  def findByEmail(query: BSONDocument) =  {
+    val cursor = collection.find(query).cursor[User]().collect[List]()
+  }
+
+  val userLoginForm = Form(mapping(
+    "email" -> nonEmptyText,
+    "password" -> nonEmptyText)(UserLogin.apply)(UserLogin.unapply))
+
+  def userLogin(email: String) = Action { implicit request =>
+    userLoginForm.bindFromRequest.fold(
+    { formWithErrors =>
+      implicit val msg = messagesApi.preferred(request)
+      Future.successful(BadRequest(html.loginForm(formWithErrors)))
+    },
+    user => {
+      val futureUserLogin = Future(findByEmail(BSONDocument("email" -> BSONString(email))))
+      futureUserLogin.onComplete{
+        case Success() =>{
+          Redirect(routes.UserController.blog())
+        }
+        case Failure() => {
+          Redirect(routes.UserController.blog())
+        }
+      }
+    }
+    )
+    Redirect(routes.UserController.blog())
   }
 }
